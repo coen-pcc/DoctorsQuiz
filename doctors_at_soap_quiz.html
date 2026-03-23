@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ken jij onze klanten? — Doctors at Soap</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --dark: #1A1612;
+    --accent: #C8A97A;
+    --accent-light: #EDE0CC;
+    --muted: #7A7268;
+    --card: #FFFFFF;
+    --correct: #3D7A5C;
+    --correct-bg: #EAF3EE;
+    --wrong: #A33A2D;
+    --wrong-bg: #F5ECEA;
+    --border: #E8E2D9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    color: var(--dark);
+    min-height: 100vh;
+    padding: 0 0 4rem;
+  }
+
+  .hero {
+    background: var(--dark);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,169,122,0.15) 0%, transparent 70%);
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(200,169,122,0.4);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    color: #FAF7F2;
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero p {
+    color: rgba(250,247,242,0.55);
+    font-size: 14px;
+    letter-spacing: 0.03em;
+  }
+
+  .progress-wrap {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 0;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+
+  .progress-fill {
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .score-strip {
+    max-width: 600px;
+    margin: 1rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 10px;
+  }
+
+  .score-pill {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .score-pill .lbl { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+  .score-pill .val { font-size: 20px; font-weight: 500; color: var(--dark); margin-top: 2px; }
+
+  .main {
+    max-width: 600px;
+    margin: 1.25rem auto 0;
+    padding: 0 1.5rem;
+  }
+
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    animation: fadeUp 0.35s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.05rem, 3vw, 1.25rem);
+    line-height: 1.45;
+    color: var(--dark);
+    margin-bottom: 1.5rem;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--cream);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    text-align: left;
+    width: 100%;
+  }
+
+  .opt:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    transform: translateX(2px);
+  }
+
+  .opt-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .opt-text { font-size: 14px; color: var(--dark); line-height: 1.4; }
+
+  .opt.correct {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+  }
+  .opt.correct .opt-letter {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: white;
+  }
+
+  .opt.wrong {
+    background: var(--wrong-bg);
+    border-color: var(--wrong);
+  }
+  .opt.wrong .opt-letter {
+    background: var(--wrong);
+    border-color: var(--wrong);
+    color: white;
+  }
+
+  .opt:disabled { cursor: default; transform: none; }
+
+  .feedback {
+    margin-top: 1rem;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: none;
+  }
+
+  .feedback.correct { background: var(--correct-bg); color: var(--correct); border: 1px solid #B2D9C5; }
+  .feedback.wrong { background: var(--wrong-bg); color: var(--wrong); border: 1px solid #E8C0BB; }
+
+  .next-btn {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 13px;
+    background: var(--dark);
+    color: var(--cream);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    display: none;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .next-btn:hover { background: #2E2A24; transform: translateY(-1px); }
+
+  /* RESULT */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .result-trophy {
+    font-family: 'DM Serif Display', serif;
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .result-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+
+  .result-score {
+    font-size: 3rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin: 0.75rem 0;
+    font-family: 'DM Serif Display', serif;
+  }
+
+  .result-verdict {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .answers-title {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    text-align: left;
+  }
+
+  .answer-line {
+    display: flex;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.5;
+  }
+
+  .answer-line:last-child { border-bottom: none; }
+  .answer-num { color: var(--accent); font-weight: 500; flex-shrink: 0; min-width: 20px; }
+  .answer-txt { color: var(--dark); }
+
+  .copy-btn {
+    margin-top: 1.25rem;
+    width: 100%;
+    padding: 13px;
+    background: var(--dark);
+    color: var(--cream);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .copy-btn:hover { background: #2E2A24; }
+
+  .replay-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 13px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .replay-btn:hover { border-color: var(--accent); color: var(--dark); }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Doctors at Soap — Teamquiz</div>
+  <h1>Ken jij onze <span>klanten?</span></h1>
+  <p>13 vragen over ons klantenbestand</p>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-meta">
+    <span id="prog-label">Vraag 1 van 13</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+</div>
+
+<div class="score-strip">
+  <div class="score-pill"><div class="lbl">Score</div><div class="val" id="score-val">0</div></div>
+  <div class="score-pill"><div class="lbl">Goed</div><div class="val" id="correct-val">0</div></div>
+  <div class="score-pill"><div class="lbl">Fout</div><div class="val" id="wrong-val">0</div></div>
+</div>
+
+<div class="main">
+  <div id="quiz-area">
+    <div class="q-card" id="q-card">
+      <div class="q-label" id="q-label">Vraag 1</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">Volgende vraag →</button>
+    </div>
+  </div>
+
+  <div id="result-area" class="hidden">
+    <div class="result-card">
+      <div class="result-trophy" id="trophy">🏆</div>
+      <h2>Resultaat</h2>
+      <div class="result-score" id="final-score"></div>
+      <div class="result-verdict" id="verdict"></div>
+      <div class="divider"></div>
+      <div class="answers-title">Antwoordenblok — stuur dit morgen in WhatsApp</div>
+      <div id="answer-list"></div>
+      <button class="copy-btn" onclick="copyAnswers()">Kopieer antwoorden voor WhatsApp</button>
+      <button class="replay-btn" onclick="restart()">Opnieuw spelen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "🥇 Welke vrouwennaam staat op #1 in ons klantenbestand?",
+    opts: ["Sanne", "Anne", "Laura", "Emma"],
+    answer: 2,
+    fun: "Laura wint met 428 klanten en 2.370 afspraken. De onbetwiste koningin van ons bestand! 👑"
+  },
+  {
+    q: "📊 Hoeveel unieke voornamen staan er in ons klantenbestand?",
+    opts: ["Ruim 1.000", "Ruim 3.000", "Ruim 6.000", "Ruim 9.000"],
+    answer: 3,
+    fun: "9.700+ unieke namen! Van Laura tot Slobberdaane — ons bestand is een echte namenencyclopedie. 📚"
+  },
+  {
+    q: "📅 Hoe vaak komt een Doctors at Soap klant gemiddeld per jaar langs?",
+    opts: ["1,3x", "1,8x", "2,2x", "2,8x"],
+    answer: 0,
+    fun: "Gemiddeld 1,3x per jaar — inclusief iedereen die maar één keer langs is geweest."
+  },
+  {
+    q: "🤨 Huh, dat is weinig! Maar als je alleen klanten meeneemt die minimaal 1x per jaar komen, wat is dan het gemiddelde?",
+    opts: ["1,7x", "2,1x", "3,1x", "3,5x"],
+    answer: 0,
+    fun: "1,7x per jaar! Als je de eenmalige bezoekers eruit filtert, zien de trouwe klanten er een stuk loyaler uit. 💪"
+  },
+  {
+    q: "🏆 Welke naam komt gemiddeld het vaakst per jaar langs?",
+    opts: ["Alice", "Wieke", "Suzette", "Gillian"],
+    answer: 2,
+    fun: "Suzette komt gemiddeld 4,92x per jaar! Slechts 6 klanten maar samen goed voor 118 afspraken. Absolute vaste waarde! 🏆"
+  },
+  {
+    q: "🚹 Op welke plek staat de eerste MAN in onze lijst? (hij heet Martijn)",
+    opts: ["Plek 100", "Plek 150", "Plek 180", "Plek 207"],
+    answer: 3,
+    fun: "Martijn staat op plek 207 met 40 klanten en gem. 1,46x per jaar. Onze mannen durven het gewoon aan! 💪"
+  },
+  {
+    q: "💅 Welke naam staat op plek 2, net achter Laura?",
+    opts: ["Eva", "Esther", "Anne", "Sanne"],
+    answer: 2,
+    fun: "Anne staat op plek 2 met 373 klanten en 2.075 afspraken. Altijd nummer 2, maar zeker geen verliezer! 😉"
+  },
+  {
+    q: "🤔 Op welke plek staat Emma in ons klantenbestand?",
+    opts: ["Plek 5", "Plek 14", "Plek 25", "Plek 33"],
+    answer: 3,
+    fun: "Emma staat pas op plek 33 met 178 klanten. Verrassend laag voor zo'n populaire naam in Nederland!"
+  },
+  {
+    q: "🔢 Hoeveel klanten heten Stephanie?",
+    opts: ["103", "133", "163", "193"],
+    answer: 2,
+    fun: "163 klanten heten Stephanie, goed voor 1.113 afspraken en gem. 1,71x per jaar. Eén van de trouwste namen! 💅"
+  },
+  {
+    q: "👨 Hoeveel klanten heten David?",
+    opts: ["18", "38", "58", "78"],
+    answer: 1,
+    fun: "38 klanten heten David, goed voor 188 afspraken en gem. 1,24x per jaar."
+  },
+  {
+    q: "⚖️ Wie komen gemiddeld vaker langs per jaar — mannen of vrouwen?",
+    opts: ["Mannen", "Vrouwen, maar nipt", "Vrouwen, veel vaker", "Even vaak"],
+    answer: 1,
+    fun: "Vrouwen winnen nipt: gem. 1,66x vs 1,64x per jaar voor mannen. Scheiden doet lijden! 😄"
+  },
+  {
+    q: "🚹 Welke mannennaam (min. 10x voorkomend) komt het vaakst per jaar langs?",
+    opts: ["Sahar", "Sander", "Rene", "Kevin"],
+    answer: 0,
+    fun: "Sahar wint met 2,09x per jaar! Sander (2,00x) en Rene (1,95x) zitten er vlak achter. 💪"
+  },
+  {
+    q: "💅 Welke vrouwennaam (min. 10x voorkomend) komt het vaakst per jaar langs?",
+    opts: ["Gillian", "Wieke", "Marie-Louise", "Lesley"],
+    answer: 0,
+    fun: "Gillian wint met 3,38x per jaar — maar Wieke (3,34x) zit er zo dicht op dat het een echte valstrik is! 😄"
+  }
+];
+
+let current = 0, score = 0, correct = 0, wrong = 0;
+
+function loadQ() {
+  const q = questions[current];
+  const pct = Math.round((current / questions.length) * 100);
+  document.getElementById('prog-label').textContent = `Vraag ${current + 1} van ${questions.length}`;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('q-label').textContent = `Vraag ${current + 1}`;
+  document.getElementById('q-text').textContent = q.q;
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  ['A','B','C','D'].forEach((letter, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="opt-letter">${letter}</span><span class="opt-text">${q.opts[i]}</span>`;
+    btn.onclick = () => pick(i);
+    opts.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'none';
+  fb.className = 'feedback';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const card = document.getElementById('q-card');
+  card.style.animation = 'none';
+  requestAnimationFrame(() => { card.style.animation = 'fadeUp 0.35s ease both'; });
+}
+
+function pick(i) {
+  const q = questions[current];
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b => b.disabled = true);
+  const isCorrect = i === q.answer;
+
+  if (isCorrect) {
+    score += 10; correct++;
+    btns[i].classList.add('correct');
+  } else {
+    wrong++;
+    btns[i].classList.add('wrong');
+    btns[q.answer].classList.add('correct');
+  }
+
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('correct-val').textContent = correct;
+  document.getElementById('wrong-val').textContent = wrong;
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.textContent = (isCorrect ? '✓ Goed! ' : '✗ Helaas! ') + q.fun;
+  fb.style.display = 'block';
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQ() {
+  current++;
+  if (current >= questions.length) showResult();
+  else loadQ();
+}
+
+function showResult() {
+  document.getElementById('quiz-area').classList.add('hidden');
+  document.getElementById('result-area').classList.remove('hidden');
+  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('prog-pct').textContent = '100%';
+
+  const pct = Math.round((correct / questions.length) * 100);
+  document.getElementById('final-score').textContent = correct + ' / ' + questions.length;
+
+  const trophies = ['😅','🌱','💅','⭐','🏆'];
+  const verdicts = [
+    "Misschien werk je hier al te lang en zie je de namen niet meer...",
+    "Een begin is er! Je kent je klanten een beetje.",
+    "Niet slecht! Jij weet waar je werkt. 💅",
+    "Indrukwekkend! Jij bent het levende klantenbestand.",
+    "Perfect! Ben jij stiekem het CRM-systeem? 🤖"
+  ];
+  const tier = Math.min(4, Math.floor(pct / 20));
+  document.getElementById('trophy').textContent = trophies[tier];
+  document.getElementById('verdict').textContent = verdicts[tier];
+
+  const answers = [
+    "1. Laura 👑 — plek 1, 428 klanten, 2.370 afspraken",
+    "2. Ruim 9.000 unieke namen (9.700+!)",
+    "3. 1,3x per jaar gemiddeld",
+    "4. 1,7x per jaar (alleen klanten min. 1x/jaar)",
+    "5. Suzette — 4,92x per jaar 🏆",
+    "6. Martijn staat op plek 207",
+    "7. Anne — plek 2, 373 klanten",
+    "8. Emma staat op plek 33",
+    "9. Stephanie — 163 klanten, 1,71x/jaar",
+    "10. David — 38 klanten",
+    "11. Vrouwen, maar nipt (1,66x vs 1,64x)",
+    "12. Sahar — 2,09x per jaar 💪",
+    "13. Gillian — 3,38x per jaar 💅"
+  ];
+
+  const list = document.getElementById('answer-list');
+  list.innerHTML = '';
+  answers.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'answer-line';
+    div.innerHTML = `<span class="answer-num">${i+1}.</span><span class="answer-txt">${a.substring(a.indexOf(' ') + 1)}</span>`;
+    list.appendChild(div);
+  });
+
+  window._answersText = "📋 ANTWOORDEN — Ken jij onze klanten?\nDoctors at Soap Teamquiz\n\n" + answers.join('\n');
+}
+
+function copyAnswers() {
+  navigator.clipboard.writeText(window._answersText).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Gekopieerd! ✓';
+    setTimeout(() => btn.textContent = 'Kopieer antwoorden voor WhatsApp', 2000);
+  });
+}
+
+function restart() {
+  current = 0; score = 0; correct = 0; wrong = 0;
+  document.getElementById('score-val').textContent = '0';
+  document.getElementById('correct-val').textContent = '0';
+  document.getElementById('wrong-val').textContent = '0';
+  document.getElementById('result-area').classList.add('hidden');
+  document.getElementById('quiz-area').classList.remove('hidden');
+  loadQ();
+}
+
+loadQ();
+</script>
+</body>
+</html>
